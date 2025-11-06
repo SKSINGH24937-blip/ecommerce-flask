@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Admin Panel</h2>
+
+<a class="btn btn-warning mb-3" href="{{ url_for('admin_orders') }}">View Orders</a>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for m in messages %}
+      <div class="alert alert-info">{{ m }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<form method="post" class="mb-4" enctype="multipart/form-data">
+  <div class="row g-2">
+    <div class="col-md-4">
+      <input name="name" class="form-control" placeholder="Product name" required>
+    </div>
+    <div class="col-md-2">
+      <input name="price" type="number" step="0.01" class="form-control" placeholder="Price" required>
+    </div>
+    <div class="col-md-4">
+      <input name="description" class="form-control" placeholder="Short description">
+    </div>
+    <div class="col-md-2">
+      <input name="image" class="form-control" placeholder="/static/image/filename.jpg">
+    </div>
+  </div>
+  <div class="mt-2">
+    <button class="btn btn-primary">Add Product</button>
+  </div>
+</form>
+
+<h4>Existing Products</h4>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Price</th>
+      <th>Description</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in products %}
+    <tr>
+      <td>{{ p.id }}</td>
+      <td>{{ p.name }}</td>
+      <td>₹ {{ '%.2f'|format(p.price) }}</td>
+      <td>{{ p.description or "-" }}</td>
+      <td>
+        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_edit_product', pid=p.id) }}">Edit</a>
+
+        <form method="post" action="{{ url_for('admin_delete_product', pid=p.id) }}" style="display:inline" onsubmit="return confirm('Delete product {{ p.name }}?');">
+          <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

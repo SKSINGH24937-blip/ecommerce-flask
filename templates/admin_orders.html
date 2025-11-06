@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>All Orders</h2>
+
+{% if orders %}
+  <table class="table table-striped">
+    <thead>
+      <tr><th>Order ID</th><th>Customer</th><th>Total (₹)</th><th>Phone</th><th>Status</th><th>Created</th><th></th></tr>
+    </thead>
+    <tbody>
+    {% for o in orders %}
+      <tr>
+        <td>{{ o.id }}</td>
+        <td>{{ o.customer_name or 'Guest' }}</td>
+        <td>₹ {{ '%.2f'|format(o.total_amount) }}</td>
+        <td>{{ o.phone }}</td>
+        <td>{{ o.status or 'Pending' }}</td>
+        <td>{{ o.created_at.strftime('%Y-%m-%d %H:%M') if o.created_at else '-' }}</td>
+        <td><a class="btn btn-sm btn-primary" href="{{ url_for('admin_order_detail', order_id=o.id) }}">View</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <div class="alert alert-info">No orders yet.</div>
+{% endif %}
+{% endblock %}

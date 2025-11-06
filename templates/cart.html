@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Your Cart</h2>
+
+{% if items and items|length > 0 %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Qty</th>
+        <th>Subtotal</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for it in items %}
+      <tr>
+        <td>{{ it.product.name }}</td>
+        <td>₹ {{ "%.2f"|format(it.product.price) }}</td>
+        <td style="width:160px;">
+          <div class="d-flex align-items-center">
+            <!-- Decrease -->
+            <form method="post" action="{{ url_for('update_cart') }}" style="display:inline;margin-right:6px;">
+              <input type="hidden" name="pid" value="{{ it.product.id }}">
+              <input type="hidden" name="action" value="dec">
+              <button class="btn btn-sm btn-outline-secondary">−</button>
+            </form>
+
+            <!-- Set quantity -->
+            <form method="post" action="{{ url_for('update_cart') }}" style="display:inline;margin-right:6px;">
+              <input type="hidden" name="pid" value="{{ it.product.id }}">
+              <input type="hidden" name="action" value="set">
+              <input name="qty" type="number" min="1" value="{{ it.qty }}" style="width:72px;" class="form-control form-control-sm">
+            </form>
+
+            <!-- Increase -->
+            <form method="post" action="{{ url_for('update_cart') }}" style="display:inline;margin-left:6px;">
+              <input type="hidden" name="pid" value="{{ it.product.id }}">
+              <input type="hidden" name="action" value="inc">
+              <button class="btn btn-sm btn-outline-secondary">+</button>
+            </form>
+          </div>
+        </td>
+        <td>₹ {{ "%.2f"|format(it.subtotal) }}</td>
+        <td>
+          <form method="post" action="{{ url_for('update_cart') }}" onsubmit="return confirm('Remove item?');">
+            <input type="hidden" name="pid" value="{{ it.product.id }}">
+            <input type="hidden" name="action" value="remove">
+            <button class="btn btn-sm btn-danger">Remove</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <td colspan="3" class="text-end"><strong>Total</strong></td>
+        <td colspan="2"><strong>₹ {{ "%.2f"|format(total) }}</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Continue Shopping</a>
+    <a href="{{ url_for('checkout') }}" class="btn btn-primary">Checkout</a>
+  </div>
+
+{% else %}
+  <div class="alert alert-info">Your cart is empty. <a href="{{ url_for('index') }}">Shop now</a></div>
+{% endif %}
+
+{% endblock %}
+
+<script>
+document.addEventListener('change', function(e){
+  if(e.target && e.target.name === 'qty'){
+    e.target.form.submit();
+  }
+});
+</script>
